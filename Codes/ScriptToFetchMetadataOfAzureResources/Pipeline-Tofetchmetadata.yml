@@ -1,0 +1,42 @@
+name: Fetch-Metadata-OfAzureResource
+
+parameters:
+       
+  - name: ResourceName
+    displayName: ResourceName
+    type: string
+    default: testvm
+
+  - name: ServiceConnectionName
+    displayName: ServiceConnectionName
+    type: string
+    default: testsvcconn
+
+trigger: none
+stages:
+ 
+  - stage: FetchMetadataOfAzureResource
+    displayName: "Fetch Metadata Of Azure Resource"
+    pool:
+     vmImage: 'windows-latest'
+    jobs:
+     
+      - job: FetchMetadataOfAzureResource
+        displayName: "Fetch Metadata Of Azure Resource"
+        steps:
+         - checkout: self
+         - task: CopyFiles@2
+           displayName: "Copy Files From Sources to Artifact staging directory"
+           inputs: 
+            SourceFolder: '$(build.SourcesDirectory)/Codes/ScriptToFetchMetadataOfAzureResources/'
+            TargetFolder: '$(build.artifactstagingdirectory)/Codes/ScriptToFetchMetadataOfAzureResources/'
+         
+         - task: AzurePowerShell@5
+           displayName: "Fetch Metadata Of Azure Resource"
+           name: FetchMetadataOfAzureResource
+           continueOnError: false
+           inputs:
+            azurePowerShellVersion: LatestVersion
+            azureSubscription: '${{ parameters.ServiceConnectionName }}'
+            ScriptPath: '$(build.artifactstagingdirectory)/Codes/ScriptToFetchMetadataOfAzureResources/ScriptToFetchMetadataOfAzureResources.ps1'
+            ScriptArguments: '-ResourceName ${{ parameters.ResourceName }}'
