@@ -65,6 +65,80 @@ function New-ResourceGroup {
 .PARAMETER AppgatewayName
   Specifies the application gateway name
 
+.PARAMETER SkuName
+  Specifies the application gateway SKU 
+
+.PARAMETER Tier
+  Specifies the application gateway tier 
+
+.PARAMETER AGSubnetName
+  Specifies the application gateway subnet name
+
+.PARAMETER AGAddressPrefix
+  Specifies the application gateway subnet address prefix
+
+.PARAMETER BackEndsubnetName
+  Specifies the application gateway backend subnet name
+
+.PARAMETER BackEndAddressPrefix
+  Specifies the application gateway backend subnet address prefix
+
+.PARAMETER VnetName
+  Specifies the application gateway virtual network name
+
+.PARAMETER VnetAddressPrefix
+  Specifies the application gateway virtual network address prefix
+
+.PARAMETER PIPName
+  Specifies the application gateway public ip name
+
+.PARAMETER PIPName
+  Specifies the application gateway backend subnet address prefix
+
+.PARAMETER AppGatewayIPName
+  Specifies the application gateway gateway IP name
+
+.PARAMETER AGFrontendIPConfigName
+  Specifies the application gateway frontend IP configuration name
+
+.PARAMETER AGFrontEndPortName
+  Specifies the application gateway frontend port name
+
+.PARAMETER AGFrontendIPConfigName
+  Specifies the application gateway frontend IP configuration name
+
+.PARAMETER AGFrontEndPortName
+  Specifies the application gateway frontend port name
+
+.PARAMETER AGBackEndPoolName
+  Specifies the application gateway backend pool name
+
+.PARAMETER ListenerName
+  Specifies the application gateway listener name
+
+.PARAMETER KeyVaultName
+  Specifies the keyvault name for certificate mgmt if any
+
+.PARAMETER LAWorkSpaceName
+  Specifies the log analytics workspace name for monitoring
+
+.PARAMETER LASku
+  Specifies the log analytics workspace sku
+
+.PARAMETER DNSName
+  Specifies the domain name server used for app gateway health probe
+
+.PARAMETER HealthProbeName
+  Specifies the health probe name of app gateway
+
+.PARAMETER AGBackEndPoolSettingName
+  Specifies the app gateway backend pool settings name
+
+.PARAMETER FrontEndRuleName
+  Specifies the app gateway front end rule name
+
+
+
 #>
 function New-AzureAppGateway {
   param(
@@ -114,6 +188,10 @@ function New-AzureAppGateway {
     [string]$LAWorkSpaceName,
     [Parameter(Mandatory = $true)]
     [string]$LASku,
+    [Parameter(Mandatory = $false)]
+    [string]$HealthProbeName,
+    [Parameter(Mandatory = $false)]
+    [string]$DNSName,
     [Parameter(Mandatory = $false)]
     [PSCustomObject]$TaggingData
    
@@ -188,6 +266,13 @@ function New-AzureAppGateway {
     $poolSettings = New-AzApplicationGatewayBackendHttpSetting -Name $AGBackEndPoolSettingName -Port 80 -Protocol Http -CookieBasedAffinity Enabled -RequestTimeout 30
     Write-Host "Created backend pool and configure backend pool settings"
 
+    #region create health probe 
+
+    $healthProbe = New-AzApplicationGatewayProbeConfig -Name "$healthProbeName" -Protocol Http `
+    -HostName $dnsName -Path "/" -Interval 30 -Timeout 30 -UnhealthyThreshold 3
+
+    #endRegion
+
     #endRegion
 
     #region create listener and rule addition
@@ -201,6 +286,7 @@ function New-AzureAppGateway {
     #endRegion
 
     #region Create Keyvault for certificate management
+    Write-Host "Creating Keyvault for secret management"
     $checkKV = Get-AzKeyVault -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName -ErrorAction SilentlyContinue
     if ($null -eq $checkKV) {
       Write-Host "The keyvault of name $KeyVaultName does not exists. Hence creating the same"
@@ -235,7 +321,8 @@ function New-AzureAppGateway {
       -FrontendPorts $frontendport `
       -HttpListeners $listener `
       -RequestRoutingRules $frontendRule `
-      -Sku $sku
+      -Sku $sku `
+      -Probe $healthProbe
     Write-Host "Created application gateway v2"
 
     #EndRegion 
@@ -363,8 +450,8 @@ function New-AzureKeyVault {
 .PARAMETER TaggingData
   Specifies the tagging data
 
-.PARAMETER AVSetName
-  Specifies the AVSetName
+.PARAMETER LAWorkSpaceName
+  Specifies the workspace name
 
 #>
 function New-LAWorkSpace {
@@ -458,7 +545,10 @@ function New-VMCreation {
     #Setting Subscription Context
     $null = Set-AzContext -SubscriptionId $subscriptionId -Scope Process -ErrorAction Stop
 
-                       
+    ###Check whether VM exists or not
+
+    $checkVM = Get-AzVM -Name $VMName -ErrorAction SilentlyContinue
+    if($null -eq $checkVM){           
     #region Create VM configuration
 
     Write-Host "Creating VM configuration"
@@ -498,7 +588,9 @@ function New-VMCreation {
       -Location $location
 
     #endRegion  
-
+    } else{
+      Write-Host "the VM $vmName already exists"
+    }
 
   }
   catch {
@@ -527,6 +619,115 @@ function New-VMCreation {
 
 .PARAMETER ILBName
   Specifies the Load balancer name
+
+.PARAMETER Sku
+  Specifies the load balancer SKU 
+
+.PARAMETER NatGatewayIPName
+  Specifies the NAT gateway IP name
+
+.PARAMETER NATGatewayName
+  Specifies the NAT gateway  name
+
+.PARAMETER IdleTimeOutMin
+  Specifies the idle timout of nat gateway and load balancer 
+
+.PARAMETER LBBackendSubnet
+  Specifies the ILB backend subnet name
+
+.PARAMETER LBBackendSubnetAddressPrefix
+  Specifies the ILB backend subnet address prefix
+
+.PARAMETER LBBastionSubName
+  Specifies the ILB bastion subnet name
+
+.PARAMETER LBbastionhostname
+  Specifies the ILB bastion host name
+
+.PARAMETER LBBastionSubAddressPrefix
+  Specifies the ILB bastion subnet address prefix
+
+.PARAMETER LBbastionPIP
+  Specifies the ILB bastion public IP address
+
+.PARAMETER LBVnetName
+  Specifies the ILB virtual network name
+
+.PARAMETER LBVnetAddressPrefix
+  Specifies ILB virtual network address prefix
+
+.PARAMETER NSGName
+  Specifies the default NSG name
+
+.PARAMETER LBRuleName
+  Specifies the default NSG rule name
+
+.PARAMETER LBRuleDescription
+  Specifies the default NSG rule description
+
+.PARAMETER LBProtocol
+  Specifies the default NSG protocol
+
+.PARAMETER LBSourcePortRange
+  Specifies the default NSG source port range
+
+
+.PARAMETER LBDestinationPortRange
+    Specifies the default NSG destination port range
+
+.PARAMETER LBSourceAddressPrefix
+  Specifies the default NSG  source address prefix
+
+.PARAMETER LBDestinationAddressPrefix
+  Specifies the default NSG destination address prefix
+
+
+.PARAMETER LBAccess
+  Specifies the default NSG access allow/deny
+
+.PARAMETER LBPriority
+  Specifies the default NSG priority
+
+.PARAMETER LBDirection
+  Specifies the default NSG direction
+
+ .PARAMETER FrontEndName
+  Specifies the ILB front end name
+
+.PARAMETER PrivateIPAddress
+  Specifies the ILB front end private IP address
+
+.PARAMETER LBBackEndPoolName
+  Specifies the ILB backend pool name
+
+.PARAMETER LBHeathProbeName
+  Specifies the ILB health probe name
+
+ .PARAMETER LBHealthProbeProtocol
+  Specifies the ILB health probe protocol
+
+.PARAMETER LBHealthProbePort
+  Specifies the ILB health probe port
+
+.PARAMETER LBRuleName2
+  Specifies the load balancer rule name
+
+.PARAMETER LBProtocol2
+  Specifies the load balancer rule's protocol
+.PARAMETER LBRuleName2
+  Specifies the load balancer rule name
+
+.PARAMETER LBProtocol2
+  Specifies the load balancer rule's protocol
+
+.PARAMETER LBFrontEndPort
+  Specifies the load balancer front end port
+
+.PARAMETER LBBackEndPort
+  Specifies the load balancer back end port
+
+.PARAMETER SubscriptionId
+  Specifies the subscriptionID
 
 #>
 function New-LoadBalancerCreation {
@@ -571,7 +772,7 @@ function New-LoadBalancerCreation {
     [string]$LBSourcePortRange,
     [Parameter(Mandatory = $true)]
     [string]$LBDestinationPortRange,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$LBSourceAddressPrefix,
     [Parameter(Mandatory = $true)]
     [string]$LBDestinationAddressPrefix,
@@ -615,7 +816,7 @@ function New-LoadBalancerCreation {
     $null = Set-AzContext -SubscriptionId $subscriptionId -Scope Process -ErrorAction Stop
 
     #region Create NAT gateway
-
+    if(![string]::IsNullOrEmpty($NATGatewayName)){
     $checkNatGW = Get-AzNatGateway -ResourceGroupName $ResourceGroupName -Name $NATGatewayName -ErrorAction SilentlyContinue
     if ($null -eq $checkNatGW) {
       Write-Host "Creating public IP address for NAT gateway"
@@ -635,6 +836,7 @@ function New-LoadBalancerCreation {
     else {
       Write-Host "Nat Gateway already exists of name $NATGatewayName"
     }
+  }
     #endRegion 
 
     #region subnet configiration and virtual network
@@ -688,7 +890,7 @@ function New-LoadBalancerCreation {
     #region Create bastion host
         
     $checkLBVnet = Get-AzVirtualNetwork -ResourceGroupName $ResourceGroupName -Name $lbvnetName -ErrorAction SilentlyContinue
-        
+    if(![string]::IsNullOrEmpty($LBbastionhostname)){    
     $checkBastionHost = Get-AzBastion -ResourceGroupName $ResourceGroupName -Name $LBbastionhostname -ErrorAction SilentlyContinue
     if ($null -eq $checkBastionHost) {
       Write-host "Creating public IP for bastion host $LBbastionhostname"
@@ -707,10 +909,8 @@ function New-LoadBalancerCreation {
     else {
       Write-host "Bastion host $LBbastionhostname already exists"
     }
-
-    #region create network security group with n/w rule
-
-        
+  }
+    #region create network security group with n/w rule to connect web tier subnet with the ILB        
 
     $nsgCreateParams = @{
 
@@ -743,12 +943,7 @@ function New-LoadBalancerCreation {
 
     Write-Host "Configure front end IP address"
         
-    $lbFrontEndIPParams = @{
-      Name             = $frontEndName
-      PrivateIpAddress = $privateIPAddress
-      SubnetId         = $vnetConfig.subnets[2].Id
-    }
-    $lbFrontIPAddress = New-AzLoadBalancerFrontendIpConfig @lbFrontEndIPParams
+    $lbFrontIPAddress = New-AzLoadBalancerFrontendIpConfig -Name  $frontEndName -PrivateIpAddress $privateIPAddress -SubnetId $vnetConfig.subnets[2].Id
 
     Write-Host "Configure back end IP address"
     $lbBackEndPool = New-AzLoadBalancerBackendAddressPoolConfig -Name $lbBackEndPoolName
@@ -758,11 +953,11 @@ function New-LoadBalancerCreation {
       Name              = $LBHeathProbeName
       Protocol          = $LBHealthProbeProtocol
       Port              = $LBHealthProbePort
-      IntervalInSeconds = '180'
+      IntervalInSeconds = '30'
       ProbeCount        = '2'
     }
     $healthprobeConfig = New-AzLoadBalancerProbeConfig @probeParams
-
+                           
     Write-Host "Create load balancer rule"
     $lbrule = @{
       Name                    = $LBRuleName2
@@ -772,8 +967,9 @@ function New-LoadBalancerCreation {
       IdleTimeoutInMinutes    = $IdleTimeOutMin
       FrontendIpConfiguration = $lbFrontIPAddress
       BackendAddressPool      = $lbBackEndPool
+      Probe                   = $healthprobeConfig
     }
-    $rule = New-AzLoadBalancerRuleConfig @lbrule -EnableTcpReset
+    $rule = New-AzLoadBalancerRuleConfig @lbrule -EnableTcpReset -EnableFloatingIP 
 
     Write-Host "Create Load balancer of name $ILBName"
     $loadbalancer = @{
@@ -812,8 +1008,35 @@ function New-LoadBalancerCreation {
 .PARAMETER TaggingData
   Specifies the tagging data
 
-.PARAMETER AVSetName
-  Specifies the AVSetName
+.PARAMETER NSGName
+  Specifies the NSG name
+
+.PARAMETER RuleName
+  Specifies the network rule name
+
+.PARAMETER RuleDescription
+ Specifies the network rule description
+
+.PARAMETER SourcePortRange
+  Specifies the source port range
+
+.PARAMETER DestinationPortRange
+  Specifies the destination port range
+
+.PARAMETER SourceAddressPrefix
+  Specifies the Source Address Prefix
+
+.PARAMETER DestinationAddressPrefix
+  Specifies the Destination Address Prefix
+
+.PARAMETER Access
+  Specifies the access allow/deny
+
+.PARAMETER Priority
+  Specifies the priority of network rule
+
+.PARAMETER Direction
+  Specifies the direction of n/w rule inbound/outbound
 
 #>
 function New-NetworkSecurityGrp {
@@ -882,7 +1105,8 @@ function New-NetworkSecurityGrp {
              
       }
             
-      New-AzNetworkSecurityRuleConfig @nsgrule
+ 
+      $getNSG | Add-AzNetworkSecurityRuleConfig @nsgrule
       $getNSG | Set-AzNetworkSecurityGroup 
       Write-Host "Created rule name $RuleName and added to the NSG $nsgName" 
     }
@@ -923,7 +1147,7 @@ function New-NetworkSecurityGrp {
   Specifies the KeyVaultName
 
 .PARAMETER RequestedServiceObjectiveName
-  Specifies the service tier
+  Specifies the service tier of Azure SQL database
 
 .PARAMETER AllowedIPs
   Specifies the AllowedIPs
