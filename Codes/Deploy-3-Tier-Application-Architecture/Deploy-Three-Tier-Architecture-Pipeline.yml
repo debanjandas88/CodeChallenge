@@ -1,0 +1,300 @@
+name: Pipeline-To-Deploy-Three-Tier-Architecture
+
+parameters:
+       
+  - name: ResourceGroupName
+    displayName: ResourceGroupName
+    type: string
+ 
+  - name: ServiceConnectionName
+    displayName: ServiceConnectionName
+    type: string
+    default: testsvcconn
+
+  - name: Location
+    displayName: Location
+    type: string
+ 
+  - name: SubscriptionName
+    displayName: SubscriptionName
+    type: string
+  
+  - name: ApplicationID
+    displayName: ApplicationID
+    type: string
+ 
+  - name: ApplicationName
+    displayName: ApplicationName
+    type: string
+
+  - name: AppGatewayName
+    displayName: AppGatewayName
+    type: string
+ 
+  - name: AppGatewaySkuName
+    displayName: AppGatewaySkuName
+    type: string
+  
+  - name: AppGatewayTier
+    displayName: AppGatewayTier
+    type: string
+ 
+  - name: AGSubnetName
+    displayName: AGSubnetName
+    type: string
+
+  - name: AGAddressPrefix
+    displayName: AGAddressPrefix
+    type: string
+ 
+  - name: BackEndsubnetName
+    displayName: BackEndsubnetName
+    type: string
+  
+  - name: BackEndAddressPrefix
+    displayName: BackEndAddressPrefix
+    type: string
+ 
+  - name: VnetName
+    displayName: VnetName
+    type: string
+  - name: VnetAddressPrefix
+    displayName: VnetAddressPrefix
+    type: string
+ 
+  - name: PIPName
+    displayName: PIPName
+    type: string
+  
+  - name: AppGatewayIPName
+    displayName: AppGatewayIPName
+    type: string
+ 
+  - name: AGFrontendIPConfigName
+    displayName: AGFrontendIPConfigName
+    type: string
+
+  - name: AGFrontEndPortName
+    displayName: AGFrontEndPortName
+    type: string
+ 
+  - name: AGBackEndPoolName
+    displayName: AGBackEndPoolName
+    type: string
+  
+  - name: AGBackEndPoolSettingName
+    displayName: AGBackEndPoolSettingName
+    type: string
+ 
+  - name: ListenerName
+    displayName: ListenerName
+    type: string
+    
+  - name: FrontEndRuleName
+    displayName: FrontEndRuleName
+    type: string
+ 
+  - name: KeyVaultName
+    displayName: KeyVaultName
+    type: string
+  
+  - name: LAWorkSpaceName
+    displayName: LAWorkSpaceName
+    type: string
+ 
+  - name: LASku
+    displayName: LASku
+    type: string
+
+  - name: VMName1
+    displayName: VMName1
+    type: string
+ 
+  - name: VMName2
+    displayName: VMName2
+    type: string
+  
+  - name: VMName3
+    displayName: VMName3
+    type: string
+ 
+  - name: VMName4
+    displayName: VMName4
+    type: string
+
+  - name: NicName1
+    displayName: NicName1
+    type: string
+ 
+  - name: NicName2
+    displayName: NicName2
+    type: string
+  
+  - name: NicName3
+    displayName: NicName3
+    type: string
+ 
+  - name: NicName4
+    displayName: NicName4
+    type: string
+
+  - name: VMSize
+    displayName: VMSize
+    type: string
+  
+  - name: VMSku
+    displayName: VMSku
+    type: string
+ 
+  - name: SQLServerName
+    displayName: SQLServerName
+    type: string
+  - name: SQLDatabaseName
+    displayName: SQLDatabaseName
+    type: string
+ 
+  - name: RequestedServiceObjectiveName
+    displayName: RequestedServiceObjectiveName
+    type: string
+  
+  - name: ILBName
+    displayName: ILBName
+    type: string
+ 
+  - name: LBSku
+    displayName: LBSku
+    type: string
+
+  - name: NatGatewayIPName
+    displayName: NatGatewayIPName
+    type: string
+    default: null
+ 
+  - name: NATGatewayName
+    displayName: NATGatewayName
+    type: string
+    default: null
+  
+  - name: IdleTimeOutMin
+    displayName: IdleTimeOutMin
+    type: string
+ 
+  - name: LBBackendSubnet
+    displayName: LBBackendSubnet
+    type: string
+    
+  - name: LBBackendSubnetAddressPrefix
+    displayName: LBBackendSubnetAddressPrefix
+    type: string
+    default: null
+ 
+  - name: LBBastionSubName
+    displayName: LBBastionSubName
+    type: string
+    default: null
+  
+  - name: LBBastionSubAddressPrefix
+    displayName: LBBastionSubAddressPrefix
+    type: string
+ 
+  - name: LBbastionhostname
+    displayName: LBbastionhostname
+    type: string
+    default: null 
+  
+  - name: LBbastionPIP
+    displayName: LBbastionPIP
+    type: string
+    default: null
+ 
+  - name: LBRuleName
+    displayName: LBRuleName
+    type: string
+
+  - name: LBProtocol
+    displayName: LBProtocol
+    type: string
+  
+  - name: FrontEndName
+    displayName: FrontEndName
+    type: string
+
+  - name: PrivateIPAddress
+    displayName: PrivateIPAddress
+    type: string
+  
+  - name: LBBackEndPoolName
+    displayName: LBBackEndPoolName
+    type: string
+ 
+  - name: LBHeathProbeName
+    displayName: LBHeathProbeName
+    type: string
+  - name: LBHealthProbeProtocol
+    displayName: LBHealthProbeProtocol
+    type: string
+ 
+  - name: LBHealthProbePort
+    displayName: LBHealthProbePort
+    type: string
+  
+  - name: LBFrontEndPort
+    displayName: LBFrontEndPort
+    type: string
+ 
+  - name: LBBackEndPort
+    displayName: LBBackEndPort
+    type: string
+  
+  - name: NSGName
+    displayName: NSGName
+    type: string
+ 
+  - name: RSVName
+    displayName: RSVName
+    type: string
+ 
+  - name: DNSName
+    displayName: DNSName
+    type: string
+
+  - name: HealthProbeName
+    displayName: HealthProbeName
+    type: string
+ 
+  - name: KeyVaultName2
+    displayName: KeyVaultName2
+    type: string
+ 
+ 
+   
+  
+
+trigger: none
+stages:
+ 
+  - stage: ThreeTierArchitectureDeployment
+    displayName: "ThreeTierArchitectureDeployment"
+    pool:
+     vmImage: 'windows-latest'
+    jobs:
+     
+      - job: ThreeTierArchitectureDeployment
+        displayName: "ThreeTierArchitectureDeployment"
+        steps:
+         - checkout: self
+         - task: CopyFiles@2
+           displayName: "Copy Files From Sources to Artifact staging directory"
+           inputs: 
+            SourceFolder: '$(build.SourcesDirectory)/*'
+            TargetFolder: '$(build.artifactstagingdirectory)/*'
+         
+         - task: AzurePowerShell@5
+           displayName: "ThreeTierArchitectureDeployment"
+           name: ThreeTierArchitectureDeployment
+           continueOnError: false
+           inputs:
+            azurePowerShellVersion: LatestVersion
+            azureSubscription: '${{ parameters.ServiceConnectionName }}'
+            ScriptPath: '$(build.artifactstagingdirectory)/Codes/Deploy-3-Tier-Application-Architecture/Deploy-Three-Tier-Architecture-Main.ps1'
+            ScriptArguments: '-ResourceGroupName ${{ parameters.ResourceGroupName }} -Location ${{ parameters.Location }} -SubscriptionName ${{ parameters.SubscriptionName }} -ApplicationID ${{ parameters.ApplicationID }} -ApplicationName ${{ parameters.ApplicationName }} -AppGatewayName ${{ parameters.AppGatewayName }} -AppGatewaySkuName ${{ parameters.AppGatewaySkuName }} -AppGatewayTier ${{ parameters.AppGatewayTier }} -AGSubnetName ${{ parameters.AGSubnetName }} -AGAddressPrefix ${{ parameters.AGAddressPrefix }} -BackEndsubnetName ${{ parameters.BackEndsubnetName }} -BackEndAddressPrefix ${{ parameters.BackEndAddressPrefix }} -VnetName ${{ parameters.VnetName }} -VnetAddressPrefix ${{ parameters.VnetAddressPrefix }} -PIPName ${{ parameters.PIPName }} -AppGatewayIPName ${{ parameters.AppGatewayIPName }} -AGFrontendIPConfigName ${{ parameters.AGFrontendIPConfigName }} -AGFrontEndPortName ${{ parameters.AGFrontEndPortName }} -AGBackEndPoolName ${{ parameters.AGBackEndPoolName }} -AGBackEndPoolSettingName ${{ parameters.AGBackEndPoolSettingName }} -ListenerName ${{ parameters.ListenerName }} -FrontEndRuleName ${{ parameters.FrontEndRuleName }} -KeyVaultName ${{ parameters.KeyVaultName }} -LAWorkSpaceName ${{ parameters.LAWorkSpaceName }} -LASku ${{ parameters.LASku }} -VMName1 ${{ parameters.VMName1 }} -VMName2 ${{ parameters.VMName2 }} -VMName3 ${{ parameters.VMName3 }} -VMName4 ${{ parameters.VMName4 }} -NicName1 ${{ parameters.NicName1 }} -NicName2 ${{ parameters.NicName2 }} -NicName3 ${{ parameters.NicName3 }} -NicName4 ${{ parameters.NicName4 }} -VMSize ${{ parameters.VMSize }} -VMSku ${{ parameters.VMSku }} -SQLServerName ${{ parameters.SQLServerName }} -SQLDatabaseName ${{ parameters.SQLDatabaseName }} -RequestedServiceObjectiveName ${{ parameters.RequestedServiceObjectiveName }} -ILBName ${{ parameters.ILBName }} -LBSku ${{ parameters.LBSku }} -NatGatewayIPName ${{ parameters.NatGatewayIPName }} -NATGatewayName ${{ parameters.NATGatewayName }} -IdleTimeOutMin ${{ parameters.IdleTimeOutMin }} -LBBackendSubnet ${{ parameters.LBBackendSubnet }} -LBBackendSubnetAddressPrefix ${{ parameters.LBBackendSubnetAddressPrefix }} -LBBastionSubName ${{ parameters.LBBastionSubName }} -LBBastionSubAddressPrefix ${{ parameters.LBBastionSubAddressPrefix }} -LBbastionhostname ${{ parameters.LBbastionhostname }} -LBbastionPIP ${{ parameters.LBbastionPIP }} -LBRuleName ${{ parameters.LBRuleName }} -LBProtocol ${{ parameters.LBProtocol }} -FrontEndName ${{ parameters.FrontEndName }} -PrivateIPAddress ${{ parameters.PrivateIPAddress }} -LBBackEndPoolName ${{ parameters.LBBackEndPoolName }} -LBHeathProbeName ${{ parameters.LBHeathProbeName }} -LBHealthProbeProtocol ${{ parameters.LBHealthProbeProtocol }} -LBHealthProbePort ${{ parameters.LBHealthProbePort }} -LBFrontEndPort ${{ parameters.LBFrontEndPort }} -LBBackEndPort ${{ parameters.LBBackEndPort }} -NSGName ${{ parameters.NSGName }} -RSVName ${{ parameters.RSVName }} -DNSName ${{ parameters.DNSName }} -HealthProbeName ${{ parameters.HealthProbeName }} -KeyVaultName2 ${{ parameters.KeyVaultName2 }}'
