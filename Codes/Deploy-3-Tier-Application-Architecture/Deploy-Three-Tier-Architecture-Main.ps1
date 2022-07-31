@@ -629,7 +629,7 @@ try {
     $privateIPAddresses = @()
     $privateIPAddresses += ($privateIPAddress01, $privateIPAddress02)
 
-    Write-Host "The private IP address of the business tier VMs are: $privateIPAddress"
+    Write-Host "The private IP address of the business tier VMs are: $privateIPAddresses"
 
     #endRegion
 
