@@ -556,10 +556,10 @@ try {
 
     #endRegion
 
-    #region all VM under the backendpool of load balancer
+    #region configure alls VM under the backendpool of load balancer
 
     #region configuring input parameters
-    Write-Host "Create web tier virtual machines to be added as the backend of ILB"
+    Write-Host "Create business tier virtual machines to be added as the backend of ILB"
     Write-Host "Fetching the backend pool informtion of ILB"
 
     $getILB = Get-AzLoadBalancer -Name $ILBName -ResourceGroupName $ResourceGroupName
