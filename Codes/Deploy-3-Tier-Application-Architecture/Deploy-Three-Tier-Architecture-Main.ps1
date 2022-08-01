@@ -502,7 +502,7 @@ try {
         $vnet   = Get-AzVirtualNetwork -ResourceGroupName $ResourceGroupName -Name $vnetName
         $apgwbesubnet = $vnet.Subnets[1].AddressPrefix
 
-        $LBRuleName = $AGBackEndPoolName + '-' + $ILBName + '-Connect'
+        $LBRuleNamefe = $AGBackEndPoolName + '-' + $ILBName + '-Connect'
 
         Write-Host "Front end subnet of app gw : $apgwfesubnet"
 
@@ -522,7 +522,7 @@ try {
             LBVnetAddressPrefix          = $VnetAddressPrefix
             LBbastionhostname            = $LBbastionhostname
             LBbastionPIP                 = $LBbastionPIP
-            LBRuleName                   = $LBRuleName
+            LBRuleName                   = $LBRuleNamefe
             LBRuleDescription            = "Connect web tier to business tier"
             LBProtocol                   = "tcp"
             LBSourcePortRange            = "443"
