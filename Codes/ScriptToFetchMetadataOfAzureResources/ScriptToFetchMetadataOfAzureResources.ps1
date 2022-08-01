@@ -67,8 +67,12 @@ try {
                 }
             } | ConvertTo-Json -Depth 5
         }
-
-        $fetchResource = Invoke-RestMethod @invokeResourceGraphQueryArgs -ContentType 'application/json'
+        try {
+            $fetchResource = Invoke-RestMethod @invokeResourceGraphQueryArgs -ContentType 'application/json' -ErrorAction SilentlyContinue
+        }
+        catch {
+            Write-Host "Error while accessing the metadata for $resourceName. Error Message: '$($_.Exception.Message)'" -ErrorAction SilentlyContinue  
+        }
         #endRegion
 
         #region check whether resource exists or not
@@ -203,5 +207,5 @@ try {
 
 }
 catch {
-    Write-Error "Error while accessing the metadata for $resourceName. Error Message: '$($_.Exception.Message)'"
+    Write-Error "Error while accessing the metadata for $resourceName. Error Message: '$($_.Exception.Message)'" -ErrorAction Stop
 }
