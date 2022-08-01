@@ -20,6 +20,9 @@
 .PARAMETER RuleName
   Specifies the network rule name
 
+.PARAMETER Action
+  Specifies the Action
+
 .PARAMETER RuleDescription
  Specifies the network rule description
 
@@ -48,11 +51,14 @@
 
 
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$NWProtocol,
     [Parameter(Mandatory = $true)]
     [string]$NWRuleName,
     [Parameter(Mandatory = $true)]
+    [ValidateSet("Add", "Remove")]
+    [string]$Action,
+    [Parameter(Mandatory = $false)]
     [string]$NWRuleDescription,
     [Parameter(Mandatory = $false)]
     [string]$SourcePortRange,
@@ -64,13 +70,15 @@ param(
     [string]$DestinationAddressPrefix,
     [Parameter(Mandatory = $false)]
     [string]$Access,
+    [Parameter(Mandatory = $false)]
     [string]$Priority,
     [Parameter(Mandatory = $false)]
     [string]$Direction,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$ResourceGroupName,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$NSGName,
+    [Parameter(Mandatory = $false)]
     [string]$Location,
     [Parameter(Mandatory = $false)]
     [string]$ApplicationID,
@@ -106,6 +114,7 @@ try{
         NSGName                  = $NSGName
         Location                 = $Location
         TaggingData              = $TaggingData
+        Action                   = $Action
     }
 
 
