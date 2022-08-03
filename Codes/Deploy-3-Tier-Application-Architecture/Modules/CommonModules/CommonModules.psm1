@@ -263,7 +263,7 @@ function New-AzureAppGateway {
 
     Write-Host "Creating backend pool and configure backend pool settings"
     $backendPool = New-AzApplicationGatewayBackendAddressPool -Name $AGBackEndPoolName
-    $poolSettings = New-AzApplicationGatewayBackendHttpSetting -Name $AGBackEndPoolSettingName -Port 80 -Protocol Http -CookieBasedAffinity Enabled -RequestTimeout 30 -ConnectionDraining Enabled
+    $poolSettings = New-AzApplicationGatewayBackendHttpSetting -Name $AGBackEndPoolSettingName -Port 80 -Protocol Http -CookieBasedAffinity Enabled -RequestTimeout 30 #-ConnectionDraining Enabled
     Write-Host "Created backend pool and configure backend pool settings"
 
     #region create health probe 
