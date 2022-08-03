@@ -939,7 +939,7 @@ function New-LoadBalancerCreation {
       SourcePortRange          = $LBSourcePortRange
       DestinationPortRange     = $LBDestinationPortRange
       SourceAddressPrefix      = $LBSourceAddressPrefix             
-      Action                   = 'Remove'
+      Action                   = 'Add'
       DestinationAddressPrefix = $LBDestinationAddressPrefix
       Access                   = $LBAccess
       Priority                 = $LBPriority
