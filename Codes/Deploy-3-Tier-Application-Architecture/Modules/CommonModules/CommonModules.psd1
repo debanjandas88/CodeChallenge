@@ -68,7 +68,7 @@
         'New-LAWorkSpace',
         'New-VMCreation',
         'New-LoadBalancerCreation',
-        'New-NetworkSecurityGrp',
+        'New-OrModifyNetworkSecurityGrp',
         'New-SQLDatabase',
         'New-BackupConfiguration'
     )

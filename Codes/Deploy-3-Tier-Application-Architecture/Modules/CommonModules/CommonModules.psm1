@@ -263,13 +263,13 @@ function New-AzureAppGateway {
 
     Write-Host "Creating backend pool and configure backend pool settings"
     $backendPool = New-AzApplicationGatewayBackendAddressPool -Name $AGBackEndPoolName
-    $poolSettings = New-AzApplicationGatewayBackendHttpSetting -Name $AGBackEndPoolSettingName -Port 80 -Protocol Http -CookieBasedAffinity Enabled -RequestTimeout 30 #-ConnectionDraining Enabled
+    $poolSettings = New-AzApplicationGatewayBackendHttpSetting -Name $AGBackEndPoolSettingName -Port 80 -Protocol Http -CookieBasedAffinity Enabled -RequestTimeout 30
     Write-Host "Created backend pool and configure backend pool settings"
 
     #region create health probe 
 
     $healthProbe = New-AzApplicationGatewayProbeConfig -Name "$healthProbeName" -Protocol Http `
-      -HostName $dnsName -Path "/" -Interval 30 -Timeout 30 -UnhealthyThreshold 3
+    -HostName $dnsName -Path "/" -Interval 30 -Timeout 30 -UnhealthyThreshold 3
 
     #endRegion
 
@@ -548,48 +548,47 @@ function New-VMCreation {
     ###Check whether VM exists or not
 
     $checkVM = Get-AzVM -Name $VMName -ErrorAction SilentlyContinue
-    if ($null -eq $checkVM) {           
-      #region Create VM configuration
+    if($null -eq $checkVM){           
+    #region Create VM configuration
 
-      Write-Host "Creating VM configuration"
-      Write-Host "Configuring VM Size"
-      $vmConfig = New-AzVMConfig -VMName $VMName -VMSize $VMSize 
+    Write-Host "Creating VM configuration"
+    Write-Host "Configuring VM Size"
+    $vmConfig = New-AzVMConfig -VMName $VMName -VMSize $VMSize 
         
 
-      Write-Host "Configuring VM OS"
-      Set-AzVMOperatingSystem -VM $vmConfig -Windows -ComputerName $vmName -Credential $Credential
+    Write-Host "Configuring VM OS"
+    Set-AzVMOperatingSystem -VM $vmConfig -Windows -ComputerName $vmName -Credential $Credential
 
-      Set-AzVMSourceImage -VM $vmConfig -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus $VMSku -Version latest
+    Set-AzVMSourceImage -VM $vmConfig -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus $VMSku -Version latest
 
-      Write-Host "Adding N/W interface"
-      Add-AzVMNetworkInterface -VM $vmConfig -Id $NICId
-      Write-Host "Configuring boot diagnostics"
-      Set-AzVMBootDiagnostic -VM $vmConfig -Disable
+    Write-Host "Adding N/W interface"
+    Add-AzVMNetworkInterface -VM $vmConfig -Id $NICId
+    Write-Host "Configuring boot diagnostics"
+    Set-AzVMBootDiagnostic -VM $vmConfig -Disable
 
-      #endRegion  
+    #endRegion  
          
-      #region Create VM
-      Write-Host "Creating VM of Name $VMName"
-      New-AzVM -ResourceGroupName $resourceGroupName -Location $location -VM $vmConfig -Tag $TaggingData
-      Write-Host "Created VM of Name $VMName"
+    #region Create VM
+    Write-Host "Creating VM of Name $VMName"
+    New-AzVM -ResourceGroupName $resourceGroupName -Location $location -VM $vmConfig -Tag $TaggingData
+    Write-Host "Created VM of Name $VMName"
 
-      #endRegion
+    #endRegion
 
-      #region Install IIS
+    #region Install IIS
 
-      Set-AzVMExtension `
-        -ResourceGroupName $resourceGroupName `
-        -ExtensionName IIS `
-        -VMName $vmName `
-        -Publisher Microsoft.Compute `
-        -ExtensionType CustomScriptExtension `
-        -TypeHandlerVersion 1.4 `
-        -SettingString '{"commandToExecute":"powershell Add-WindowsFeature Web-Server; powershell Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername)"}' `
-        -Location $location
+    Set-AzVMExtension `
+      -ResourceGroupName $resourceGroupName `
+      -ExtensionName IIS `
+      -VMName $vmName `
+      -Publisher Microsoft.Compute `
+      -ExtensionType CustomScriptExtension `
+      -TypeHandlerVersion 1.4 `
+      -SettingString '{"commandToExecute":"powershell Add-WindowsFeature Web-Server; powershell Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername)"}' `
+      -Location $location
 
-      #endRegion  
-    }
-    else {
+    #endRegion  
+    } else{
       Write-Host "the VM $vmName already exists"
     }
 
@@ -817,27 +816,27 @@ function New-LoadBalancerCreation {
     $null = Set-AzContext -SubscriptionId $subscriptionId -Scope Process -ErrorAction Stop
 
     #region Create NAT gateway
-    if (![string]::IsNullOrEmpty($NATGatewayName)) {
-      $checkNatGW = Get-AzNatGateway -ResourceGroupName $ResourceGroupName -Name $NATGatewayName -ErrorAction SilentlyContinue
-      if ($null -eq $checkNatGW) {
-        Write-Host "Creating public IP address for NAT gateway"
+    if(![string]::IsNullOrEmpty($NATGatewayName)){
+    $checkNatGW = Get-AzNatGateway -ResourceGroupName $ResourceGroupName -Name $NATGatewayName -ErrorAction SilentlyContinue
+    if ($null -eq $checkNatGW) {
+      Write-Host "Creating public IP address for NAT gateway"
        
-        $publicIP = New-AzPublicIpAddress -Name $NatGatewayIPName -ResourceGroupName $ResourceGroupName -Location $Location -Sku $Sku -AllocationMethod 'Static'
+      $publicIP = New-AzPublicIpAddress -Name $NatGatewayIPName -ResourceGroupName $ResourceGroupName -Location $Location -Sku $Sku -AllocationMethod 'Static'
 
-        Write-Host "Created public IP address for NAT gateway"
+      Write-Host "Created public IP address for NAT gateway"
         
-        Write-Host "Creating NAT gateway"
+      Write-Host "Creating NAT gateway"
 
    
-        $natGateway = New-AzNatGateway -ResourceGroupName $ResourceGroupName -Name $NATGatewayName -IdleTimeoutInMinutes $IdleTimeOutMin `
-          -Sku $Sku -Location $Location -PublicIpAddress $publicIP -Tag $TaggingData
+      $natGateway = New-AzNatGateway -ResourceGroupName $ResourceGroupName -Name $NATGatewayName -IdleTimeoutInMinutes $IdleTimeOutMin `
+        -Sku $Sku -Location $Location -PublicIpAddress $publicIP -Tag $TaggingData
 
-        Write-Host "Created NAT gateway"
-      }
-      else {
-        Write-Host "Nat Gateway already exists of name $NATGatewayName"
-      }
+      Write-Host "Created NAT gateway"
     }
+    else {
+      Write-Host "Nat Gateway already exists of name $NATGatewayName"
+    }
+  }
     #endRegion 
 
     #region subnet configiration and virtual network
@@ -846,45 +845,29 @@ function New-LoadBalancerCreation {
     if ($null -eq $checkLBVnet ) {
 
       Write-Host "Configuring backend subnet"
-      if ($natGateway) {
-        $subnetConfig = New-AzVirtualNetworkSubnetConfig -Name $LBBackendSubnet -AddressPrefix $LBBackendSubnetAddressPrefix -NatGateway $natGateway
-      }
-      else {
-        $subnetConfig = New-AzVirtualNetworkSubnetConfig -Name $LBBackendSubnet -AddressPrefix $LBBackendSubnetAddressPrefix
-      }
+   
+      $subnetConfig = New-AzVirtualNetworkSubnetConfig -Name $LBBackendSubnet -AddressPrefix $LBBackendSubnetAddressPrefix -NatGateway $natGateway
+
       Write-Host "Configured backend subnet $LBBackendSubnet"
-      if (![string]::IsNullOrEmpty($LBBastionSubName) -and ![string]::IsNullOrEmpty($LBBastionSubAddressPrefix)) {
-        Write-Host "Configuring bastion subnet"
+        
+      Write-Host "Configuring bastion subnet"
       
-        $bastsubnetConfig = New-AzVirtualNetworkSubnetConfig -Name $LBBastionSubName -AddressPrefix $LBBastionSubAddressPrefix
+      $bastsubnetConfig = New-AzVirtualNetworkSubnetConfig -Name $LBBastionSubName -AddressPrefix $LBBastionSubAddressPrefix
 
-        Write-Host "Configured bastion subnet $LBBastionSubName"
+      Write-Host "Configured bastion subnet $LBBastionSubName"
      
-        Write-Host "Creating Vnet $LBVnetName"
+      Write-Host "Creating Vnet $LBVnetName"
 
-        $vnetParams = @{
-          Name              = $LBVnetName
-          ResourceGroupName = $ResourceGroupName
-          Location          = $Location
-          AddressPrefix     = $LBVnetAddressPrefix
-          Subnet            = $subnetConfig, $bastsubnetConfig
-        }
-        $createvnet = New-AzVirtualNetwork @vnetParams
-        Write-Host "Created Vnet $createvnet"
+      $vnetParams = @{
+        Name              = $LBVnetName
+        ResourceGroupName = $ResourceGroupName
+        Location          = $Location
+        AddressPrefix     = $LBVnetAddressPrefix
+        Subnet            = $subnetConfig, $bastsubnetConfig
       }
-      else {
-        Write-Host "Creating Vnet $LBVnetName without bastion subnet config"
+      $createvnet = New-AzVirtualNetwork @vnetParams
+      Write-Host "Created Vnet $createvnet"
 
-        $vnetParams = @{
-          Name              = $LBVnetName
-          ResourceGroupName = $ResourceGroupName
-          Location          = $Location
-          AddressPrefix     = $LBVnetAddressPrefix
-          Subnet            = $subnetConfig
-        }
-        $createvnet = New-AzVirtualNetwork @vnetParams
-        Write-Host "Created Vnet $createvnet"
-      }
            
 
     }
@@ -894,9 +877,7 @@ function New-LoadBalancerCreation {
       $checkBastionSNCFG = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $checkLBVnet -Name $LBBastionSubName -ErrorAction SilentlyContinue
       if ($null -eq $checkSubnetConfig -and $null -eq $checkBastionSNCFG) {
         Add-AzVirtualNetworkSubnetConfig -VirtualNetwork $checkLBVnet -AddressPrefix $LBBackendSubnetAddressPrefix -Name $LBBackendSubnet 
-        if (![string]::IsNullOrEmpty($LBBastionSubName) -and ![string]::IsNullOrEmpty($LBBastionSubAddressPrefix)) {
-          Add-AzVirtualNetworkSubnetConfig -VirtualNetwork $checkLBVnet -AddressPrefix $LBBastionSubAddressPrefix -Name $LBBastionSubName
-        }
+        Add-AzVirtualNetworkSubnetConfig -VirtualNetwork $checkLBVnet -AddressPrefix $LBBastionSubAddressPrefix -Name $LBBastionSubName
         $checkLBVnet | Set-AzVirtualNetwork
         Write-Host "Subnet configurations added to the vnet name $LBVnetName" 
             
@@ -909,26 +890,26 @@ function New-LoadBalancerCreation {
     #region Create bastion host
         
     $checkLBVnet = Get-AzVirtualNetwork -ResourceGroupName $ResourceGroupName -Name $lbvnetName -ErrorAction SilentlyContinue
-    if (![string]::IsNullOrEmpty($LBbastionhostname)) {    
-      $checkBastionHost = Get-AzBastion -ResourceGroupName $ResourceGroupName -Name $LBbastionhostname -ErrorAction SilentlyContinue
-      if ($null -eq $checkBastionHost) {
-        Write-host "Creating public IP for bastion host $LBbastionhostname"
+    if(![string]::IsNullOrEmpty($LBbastionhostname)){    
+    $checkBastionHost = Get-AzBastion -ResourceGroupName $ResourceGroupName -Name $LBbastionhostname -ErrorAction SilentlyContinue
+    if ($null -eq $checkBastionHost) {
+      Write-host "Creating public IP for bastion host $LBbastionhostname"
     
-        $bastionPublicip = New-AzPublicIpAddress -Name $LBbastionPIP -ResourceGroupName $ResourceGroupName -Location $Location `
-          -Sku $Sku -AllocationMethod Static
+      $bastionPublicip = New-AzPublicIpAddress -Name $LBbastionPIP -ResourceGroupName $ResourceGroupName -Location $Location `
+        -Sku $Sku -AllocationMethod Static
 
 
-        Write-host "Creating Bastion host $LBbastionhostname"
+      Write-host "Creating Bastion host $LBbastionhostname"
      
-        New-AzBastion -ResourceGroupName $ResourceGroupName -Name $LBbastionhostname -PublicIpAddress $bastionPublicip -VirtualNetwork $checkLBVnet -AsJob
+      New-AzBastion -ResourceGroupName $ResourceGroupName -Name $LBbastionhostname -PublicIpAddress $bastionPublicip -VirtualNetwork $checkLBVnet -AsJob
 
-        Write-host "Created Bastion host $LBbastionhostname"
+      Write-host "Created Bastion host $LBbastionhostname"
 
-      }
-      else {
-        Write-host "Bastion host $LBbastionhostname already exists"
-      }
     }
+    else {
+      Write-host "Bastion host $LBbastionhostname already exists"
+    }
+  }
     #region create network security group with n/w rule to connect web tier subnet with the ILB        
 
     $nsgCreateParams = @{
@@ -938,8 +919,7 @@ function New-LoadBalancerCreation {
       Protocol                 = $LBProtocol
       SourcePortRange          = $LBSourcePortRange
       DestinationPortRange     = $LBDestinationPortRange
-      SourceAddressPrefix      = $LBSourceAddressPrefix             
-      Action                   = 'Add'
+      SourceAddressPrefix      = $LBSourceAddressPrefix
       DestinationAddressPrefix = $LBDestinationAddressPrefix
       Access                   = $LBAccess
       Priority                 = $LBPriority
@@ -1066,29 +1046,26 @@ function New-NetworkSecurityGrp {
     [Parameter(Mandatory = $true)]
     [string]$NSGName,
     [Parameter(Mandatory = $true)]
-    [ValidateSet("Add", "Remove")]
-    [string]$Action,
-    [Parameter(Mandatory = $false)]
     [string]$Location,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$RuleName,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$RuleDescription,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$Protocol,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$SourcePortRange,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$DestinationPortRange,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$SourceAddressPrefix,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$DestinationAddressPrefix,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$Access,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$Priority,
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string]$Direction,
     [Parameter(Mandatory = $false)]
     [PSCustomObject]$TaggingData
@@ -1113,47 +1090,33 @@ function New-NetworkSecurityGrp {
     $getNSG = Get-AzNetworkSecurityGroup -ResourceGroupName $ResourceGroupName -Name $NSGName
     $checkRule = Get-AzNetworkSecurityRuleConfig -Name $RuleName -NetworkSecurityGroup $getNSG -ErrorAction SilentlyContinue
     if ($null -eq $checkRule) {
-      if ($action -eq 'Add') {
-        Write-Host "Creating rule name $RuleName as it is not present" 
-        $nsgrule = @{
-          Name                     = $RuleName
-          Description              = $RuleDescription
-          Protocol                 = $Protocol
-          SourcePortRange          = $SourcePortRange
-          DestinationPortRange     = $DestinationPortRange
-          SourceAddressPrefix      = $SourceAddressPrefix
-          DestinationAddressPrefix = $DestinationAddressPrefix
-          Access                   = $Access
-          Priority                 = $Priority
-          Direction                = $Direction
+      Write-Host "Creating rule name $RuleName as it is not present" 
+      $nsgrule = @{
+        Name                     = $RuleName
+        Description              = $RuleDescription
+        Protocol                 = $Protocol
+        SourcePortRange          = $SourcePortRange
+        DestinationPortRange     = $DestinationPortRange
+        SourceAddressPrefix      = $SourceAddressPrefix
+        DestinationAddressPrefix = $DestinationAddressPrefix
+        Access                   = $Access
+        Priority                 = $Priority
+        Direction                = $Direction
              
-        }
+      }
             
  
-        $getNSG | Add-AzNetworkSecurityRuleConfig @nsgrule
-        $getNSG | Set-AzNetworkSecurityGroup 
-        Write-Host "Created rule name $RuleName and added to the NSG $nsgName" 
-      }
-      else {
-        Write-Error "Invalid operation as the script is trying to delete a rule which does not exists" -ErrorAction Stop
-      }
+      $getNSG | Add-AzNetworkSecurityRuleConfig @nsgrule
+      $getNSG | Set-AzNetworkSecurityGroup 
+      Write-Host "Created rule name $RuleName and added to the NSG $nsgName" 
     }
     else {
       Write-Host "Rule name $RuleName already exists" 
-      if ($action -eq 'Remove') {
-        Write-Host "Removing rule: $rulename from NSG: $nsgName"
-        $getNSG | Remove-AzNetworkSecurityRuleConfig -Name $RuleName
-        $getNSG | Set-AzNetworkSecurityGroup 
-        Write-Host "Removed rule: $rulename from NSG: $nsgName"
-      }
-      else {
-        Write-Error "Invalid operation as the script is trying to create a rule which already exists" -ErrorAction Stop
-      }
     }
     #endRegion
   }
   catch {
-    Write-Error "Error while creating Network Security Group. Error Message: '$($_.Exception.Message)'" -ErrorAction Stop
+    Write-Error "Error while creating Network Security Group. Error Message: '$($_.Exception.Message)'"
   }
 }
 
