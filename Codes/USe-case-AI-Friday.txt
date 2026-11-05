@@ -1,0 +1,35 @@
+Here's a concise AI Friday (HR Theme) use case that works well for a TCS-style innovation showcase:
+
+Use Case: AI-Powered Employee Pulse & Attrition Risk Assistant
+
+Business Problem:
+ HR teams spend significant time analyzing employee feedback, engagement survey results, manager comments, and exit interviews. Identifying employees at risk of disengagement or attrition is often reactive.
+
+AI Solution:
+ Use Generative AI to:
+
+Analyze employee survey responses, feedback forms, and internal communications.
+Detect sentiment trends and engagement levels.
+Identify potential attrition risks based on patterns.
+Generate personalized retention recommendations for managers.
+Create HR dashboards with actionable insights.
+
+Business Impact:
+
+Early intervention for at-risk employees.
+Improved employee retention.
+Faster HR decision-making.
+Better employee experience.
+Reduced manual effort in analyzing large volumes of feedback data.
+
+AI Technologies Involved:
+
+Azure OpenAI / GPT
+Sentiment Analysis
+Natural Language Processing (NLP)
+Power BI for visualization
+Microsoft Copilot integration
+
+AI Friday Demo Scenario: "An HR manager uploads quarterly employee feedback. The AI assistant summarizes key concerns, identifies departments with declining engagement, flags retention risks, and suggests targeted action plans within minutes."
+
+This is practical, business-focused, and easy to demonstrate in a 5-minute AI Friday session.
